@@ -1,0 +1,159 @@
+<script is:inline>
+        // Binary Background
+        function generateBinaryBackground() {
+            const binaryBg = document.getElementById('binaryBg');
+            const rows = Math.ceil(window.innerHeight / 20);
+            const cols = Math.ceil(window.innerWidth / 10);
+            let binaryText = '';
+            for (let i = 0; i < rows * 3; i++) {
+                for (let j = 0; j < cols; j++) {
+                    binaryText += Math.random() > 0.5 ? '1' : '0';
+                    if (j % 8 === 7) binaryText += ' ';
+                }
+                binaryText += '\n';
+            }
+            binaryBg.textContent = binaryText;
+        }
+        generateBinaryBackground();
+        window.addEventListener('resize', generateBinaryBackground);
+
+        // Binary Clock Toggle
+        const clockElement = document.getElementById('binaryClock');
+        const dotsContainer = document.getElementById('dotsContainer');
+        const textContainer = document.getElementById('textContainer');
+        let clockMode = 'dots';
+        
+        function updateBinaryClock() {
+            const now = new Date();
+            const h = now.getHours().toString(2).padStart(6, '0');
+            const m = now.getMinutes().toString(2).padStart(6, '0');
+            const s = now.getSeconds().toString(2).padStart(6, '0');
+            const bits = h + m + s;
+            
+            if (clockMode === 'dots') {
+                const dots = dotsContainer.querySelectorAll('.binary-dot');
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                const onColor = isDark ? '#e8e8e8' : '#1a1a1a';
+                const offColor = isDark ? '#1a1a1a' : '#ffffff';
+                const borderColor = isDark ? '#d4d4d4' : '#1a1a1a';
+                
+                bits.split('').forEach((bit, i) => {
+                    if (dots[i]) {
+                        dots[i].style.borderColor = borderColor;
+                        if (bit === '1') {
+                            dots[i].classList.add('on');
+                            dots[i].style.backgroundColor = onColor;
+                        } else {
+                            dots[i].classList.remove('on');
+                            dots[i].style.backgroundColor = offColor;
+                        }
+                    }
+                });
+            } else {
+                let html = '';
+                bits.split('').forEach(char => {
+                    html += '<div class="binary-char">' + char + '</div>';
+                });
+                textContainer.innerHTML = html;
+            }
+        }
+
+        clockElement.addEventListener('click', () => {
+            clockMode = clockMode === 'dots' ? 'text' : 'dots';
+            localStorage.setItem('clockMode', clockMode);
+            
+            if (clockMode === 'text') {
+                clockElement.classList.add('text-mode');
+            } else {
+                clockElement.classList.remove('text-mode');
+            }
+            
+            updateBinaryClock();
+        });
+
+        updateBinaryClock();
+        setInterval(updateBinaryClock, 1000);
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        html.setAttribute('data-theme', currentTheme);
+        themeIcon.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+        themeToggle.addEventListener('click', () => {
+            const theme = html.getAttribute('data-theme');
+            const newTheme = theme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            themeIcon.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+            updateBinaryClock();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 't' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                themeToggle.click();
+            }
+        });
+
+        // Pixel Explosion
+        const canvas = document.getElementById('pixelCanvas');
+        const ctx = canvas.getContext('2d');
+        const pixelOverlay = document.getElementById('pixelOverlay');
+        const mainWindow = document.getElementById('mainWindow');
+        let animationId, particles = [];
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.size = Math.random() * 3 + 2;
+                this.speedX = (Math.random() - 0.5) * 8;
+                this.speedY = (Math.random() - 0.5) * 8;
+                this.gravity = 0.3;
+                this.friction = 0.98;
+            }
+            update() {
+                this.speedY += this.gravity;
+                this.speedX *= this.friction;
+                this.speedY *= this.friction;
+                this.x += this.speedX;
+                this.y += this.speedY;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.size, this.size);
+            }
+        }
+
+        function startExplosion() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const rect = mainWindow.getBoundingClientRect();
+            const style = window.getComputedStyle(mainWindow);
+            particles = [];
+            for (let x = 0; x < rect.width; x += 8) {
+                for (let y = 0; y < rect.height; y += 8) {
+                    const color = Math.random() > 0.7 ? style.borderColor : 
+                                  Math.random() > 0.5 ? style.color : style.backgroundColor;
+                    particles.push(new Particle(rect.left + x, rect.top + y, color));
+                }
+            }
+            mainWindow.style.opacity = '0';
+            pixelOverlay.classList.add('active');
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                if (particles.some(p => p.y < canvas.height && p.x > -50 && p.x < canvas.width + 50)) {
+                    animationId = requestAnimationFrame(animate);
+                } else {
+                    pixelOverlay.classList.remove('active');
+                    mainWindow.style.opacity = '1';
+                }
+            }
+            animate();
+        }
+
+        document.getElementById('closeBox').addEventListener('click', startExplosion);
+</script>
