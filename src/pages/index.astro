@@ -1,16 +1,725 @@
----
-
----
-
+<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Spencer Moore - Avionics Technician transitioning into Embedded Systems Development. 5+ years of hands-on experience with safety-critical aircraft electronics.">
+    <meta property="og:title" content="Spencer Moore - 64bit.io">
+    <meta property="og:description" content="Avionics Technician → Embedded Systems Development. Building skills in embedded C, RTOS, and microcontroller programming.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://64bit.io">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Spencer Moore - 64bit.io">
+    <meta name="twitter:description" content="Avionics Technician → Embedded Systems Development">
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <title>Spencer Moore - 64bit.io</title>
+    <style>
+        :root {
+            --bg: #f8f8f8;
+            --surface: #ffffff;
+            --border: #1a1a1a;
+            --text: #1a1a1a;
+            --text-secondary: #666666;
+            --shadow: rgba(26, 26, 26, 0.08);
+            --btn-shadow: #1a1a1a;
+            --accent: #0066ff;
+            --accent-light: #e6f0ff;
+            --binary-bg: rgba(26, 26, 26, 0.08);
+        }
+
+        [data-theme="dark"] {
+            --bg: #0d0d0d;
+            --surface: #1a1a1a;
+            --border: #d4d4d4;
+            --text: #e8e8e8;
+            --text-secondary: #a3a3a3;
+            --shadow: rgba(255, 255, 255, 0.05);
+            --btn-shadow: #d4d4d4;
+            --accent: #3d8bff;
+            --accent-light: #1a2633;
+            --binary-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 3rem 2rem !important;
+            margin: 0 !important;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            -webkit-font-smoothing: antialiased;
+            position: relative;
+        }
+
+        .binary-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            line-height: 1.6;
+            color: var(--binary-bg);
+            letter-spacing: 0.1em;
+        }
+
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            width: 48px;
+            height: 48px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            cursor: pointer;
+            box-shadow: 4px 4px 0 var(--btn-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.375rem;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 100;
+        }
+
+        .theme-toggle:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 7px 7px 0 var(--btn-shadow);
+        }
+
+        .theme-toggle:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 var(--btn-shadow);
+        }
+
+        .theme-toggle:focus {
+            outline: none;
+        }
+
+        .window {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            box-shadow: 8px 8px 0 var(--shadow);
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .title-bar {
+            background: var(--surface);
+            border-bottom: 2px solid var(--border);
+            padding: 1rem 1.5rem;
+            display: grid;
+            grid-template-columns: 16px 1fr auto;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .close-box {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border);
+            background: var(--surface);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .close-box:hover {
+            background: var(--text-secondary);
+            border-color: var(--text-secondary);
+            transform: rotate(90deg);
+        }
+
+        .title {
+            font-family: 'Courier New', monospace;
+            font-size: 1.125rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 0.15em;
+        }
+
+        .binary-clock {
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+            display: grid;
+            grid-template-columns: repeat(6, 10px);
+            grid-template-rows: repeat(3, 10px);
+            gap: 3px;
+            position: relative;
+        }
+
+        .binary-clock:hover {
+            opacity: 0.7;
+        }
+
+        .binary-clock .dots-container {
+            display: contents;
+        }
+
+        .binary-clock .text-container {
+            display: none;
+        }
+
+        .binary-clock.text-mode .dots-container {
+            display: none;
+        }
+
+        .binary-clock.text-mode .text-container {
+            display: grid;
+            grid-column: 1 / -1;
+            grid-row: 1 / -1;
+            grid-template-columns: repeat(6, 10px);
+            grid-template-rows: repeat(3, 10px);
+            gap: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .binary-char {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 10px;
+            height: 10px;
+        }
+
+        .binary-dot {
+            width: 10px;
+            height: 10px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            transition: background-color 0.2s ease;
+        }
+
+        .binary-dot.on {
+            background: var(--text);
+        }
+
+        .window-content {
+            padding: 3rem 3rem 2.5rem;
+        }
+
+        header {
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.045em;
+            line-height: 1.05;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            line-height: 1.5;
+            max-width: 600px;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        section:last-of-type {
+            margin-bottom: 0;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.625rem;
+            border-bottom: 2px solid var(--border);
+            letter-spacing: -0.025em;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.65;
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        p:last-child {
+            margin-bottom: 0;
+        }
+
+        .learning-list {
+            list-style: none;
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .learning-list li {
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
+
+        .learning-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 2px solid var(--accent);
+            transition: all 0.2s ease;
+            padding-bottom: 1px;
+        }
+
+        a:hover {
+            opacity: 0.7;
+            border-bottom-color: transparent;
+        }
+
+        a:focus {
+            outline: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.75rem;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            color: var(--text);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            box-shadow: 4px 4px 0 var(--btn-shadow);
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            margin-right: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 7px 7px 0 var(--btn-shadow);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 var(--btn-shadow);
+        }
+
+        .btn:focus {
+            outline: none;
+        }
+
+        .contact-buttons {
+            margin-top: 1.75rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0;
+        }
+
+        footer {
+            margin-top: 4rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            padding: 2rem 0 1rem 0;
+            border-top: 2px solid var(--border);
+        }
+
+        .pixel-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .pixel-overlay.active {
+            opacity: 1;
+        }
+
+        .pixel-overlay canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        ::selection {
+            background: var(--border);
+            color: var(--surface);
+        }
+
+        * {
+            transition-property: background-color, border-color, color, box-shadow;
+            transition-duration: 0.3s;
+            transition-timing-function: ease;
+        }
+
+        button, a {
+            transition-property: all;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 2rem 1rem !important;
+            }
+
+            .theme-toggle {
+                top: 1rem;
+                right: 1rem;
+                width: 44px;
+                height: 44px;
+            }
+
+            .window-content {
+                padding: 2rem 1.5rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            h2 {
+                font-size: 1.25rem;
+            }
+
+            .title {
+                font-size: 0.75rem;
+            }
+
+            .binary-clock {
+                grid-template-columns: repeat(6, 7px);
+                grid-template-rows: repeat(3, 7px);
+                gap: 2px;
+            }
+
+            .binary-clock.text-mode .text-container {
+                grid-template-columns: repeat(6, 7px);
+                grid-template-rows: repeat(3, 7px);
+                gap: 2px;
+                font-size: 0.5rem;
+            }
+
+            .binary-char {
+                width: 7px;
+                height: 7px;
+            }
+
+            .binary-dot {
+                width: 7px;
+                height: 7px;
+            }
+
+            .btn {
+                display: block;
+                width: 100%;
+                margin-right: 0;
+                text-align: center;
+            }
+
+            .binary-background {
+                font-size: 0.625rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="binary-background" id="binaryBg"></div>
+    <div class="pixel-overlay" id="pixelOverlay">
+        <canvas id="pixelCanvas"></canvas>
+    </div>
+
+    <button class="theme-toggle" id="themeToggle">
+        <span id="themeIcon">🌙</span>
+    </button>
+
+    <div class="container">
+        <div class="window" id="mainWindow">
+            <div class="title-bar">
+                <div class="close-box" id="closeBox"></div>
+                <div class="title">[ 64BIT.IO ]</div>
+                <div class="binary-clock" id="binaryClock">
+                    <div class="dots-container" id="dotsContainer">
+                        <div class="binary-dot"></div>
+                        <div class="binary-dot"></div>
+                        <div class="binary-dot"></div>
+                        <div class="binary-dot"></div>
+                        <div class="binary-dot"></div>
+                        <div class="binary-dot"></div>
+                        <div class="binary-dot"></div>
+                        <div class="binary-dot"></div>
+                        <div class="binary-dot"></div>
+                        <div class="binary-dot"></div>
+                        <div class="binary-dot"></div>
+                        <div class="binary-dot"></div>
+                        <div class="binary-dot"></div>
+                        <div class="binary-dot"></div>
+                        <div class="binary-dot"></div>
+                        <div class="binary-dot"></div>
+                        <div class="binary-dot"></div>
+                        <div class="binary-dot"></div>
+                    </div>
+                    <div class="text-container" id="textContainer"></div>
+                </div>
+            </div>
+            <div class="window-content">
+                <header>
+                    <h1>Spencer Moore</h1>
+                    <p class="subtitle">Avionics Technician → Embedded Systems Development</p>
+                </header>
+
+                <section>
+                    <h2>Background</h2>
+                    <p>
+                        I'm an avionics technician with close to a decade of experience in working with turbine-powered aircraft. During this time, I have developed an interest in low-level understanding of system operation, reliability, and accuracy in critical flight equipment.                    </p>
+                    <p>
+                        At the moment, I am transitioning to software engineering by pursuing a degree in Computer Science at Western Governors University. My plan is to bridge the gap between hardware and software, utilizing the skills I have gained in maintenance to create a successful career in embedded systems development.                </section>
+
+                <section>
+                    <h2>Currently Learning</h2>
+                    <ul class="learning-list">
+                        <li>Object-oriented programming in C++, Python, and Java</li>
+                        <li>Computer Architecture & Assembly Language</li>
+                        <li>Communication protocols: I2C, SPI, UART</li>
+                        <li>Embedded C programming on STM32 Nucleo boards</li>
+                        <li>Satellite telemetry and sensor integration (MySat)</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Get in Touch</h2>
+                    <div class="contact-buttons">
+                        <a href="mailto:spencer@64bit.io" class="btn">Email</a>
+                        <a href="https://github.com/Vexlix" target="_blank" class="btn">GitHub</a>
+                        <a href="https://www.linkedin.com/in/spenceremoore/" target="_blank" class="btn">LinkedIn</a>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <footer>
+            <p>Built using Astro. Deployed on CloudFlare Pages.</p>
+        </footer>
+    </div>
+
+    <script is:inline>
+        // Binary Background
+        function generateBinaryBackground() {
+            const binaryBg = document.getElementById('binaryBg');
+            const rows = Math.ceil(window.innerHeight / 20);
+            const cols = Math.ceil(window.innerWidth / 10);
+            let binaryText = '';
+            for (let i = 0; i < rows * 3; i++) {
+                for (let j = 0; j < cols; j++) {
+                    binaryText += Math.random() > 0.5 ? '1' : '0';
+                    if (j % 8 === 7) binaryText += ' ';
+                }
+                binaryText += '\n';
+            }
+            binaryBg.textContent = binaryText;
+        }
+        generateBinaryBackground();
+        window.addEventListener('resize', generateBinaryBackground);
+
+        // Binary Clock Toggle
+        const clockElement = document.getElementById('binaryClock');
+        const dotsContainer = document.getElementById('dotsContainer');
+        const textContainer = document.getElementById('textContainer');
+        let clockMode = 'dots';
+        
+        function updateBinaryClock() {
+            const now = new Date();
+            const h = now.getHours().toString(2).padStart(6, '0');
+            const m = now.getMinutes().toString(2).padStart(6, '0');
+            const s = now.getSeconds().toString(2).padStart(6, '0');
+            const bits = h + m + s;
+            
+            if (clockMode === 'dots') {
+                const dots = dotsContainer.querySelectorAll('.binary-dot');
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                const onColor = isDark ? '#e8e8e8' : '#1a1a1a';
+                const offColor = isDark ? '#1a1a1a' : '#ffffff';
+                const borderColor = isDark ? '#d4d4d4' : '#1a1a1a';
+                
+                bits.split('').forEach((bit, i) => {
+                    if (dots[i]) {
+                        dots[i].style.borderColor = borderColor;
+                        if (bit === '1') {
+                            dots[i].classList.add('on');
+                            dots[i].style.backgroundColor = onColor;
+                        } else {
+                            dots[i].classList.remove('on');
+                            dots[i].style.backgroundColor = offColor;
+                        }
+                    }
+                });
+            } else {
+                let html = '';
+                bits.split('').forEach(char => {
+                    html += '<div class="binary-char">' + char + '</div>';
+                });
+                textContainer.innerHTML = html;
+            }
+        }
+
+        clockElement.addEventListener('click', () => {
+            clockMode = clockMode === 'dots' ? 'text' : 'dots';
+            localStorage.setItem('clockMode', clockMode);
+            
+            if (clockMode === 'text') {
+                clockElement.classList.add('text-mode');
+            } else {
+                clockElement.classList.remove('text-mode');
+            }
+            
+            updateBinaryClock();
+        });
+
+        updateBinaryClock();
+        setInterval(updateBinaryClock, 1000);
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        html.setAttribute('data-theme', currentTheme);
+        themeIcon.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+        themeToggle.addEventListener('click', () => {
+            const theme = html.getAttribute('data-theme');
+            const newTheme = theme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            themeIcon.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+            updateBinaryClock();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 't' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                themeToggle.click();
+            }
+        });
+
+        // Pixel Explosion
+        const canvas = document.getElementById('pixelCanvas');
+        const ctx = canvas.getContext('2d');
+        const pixelOverlay = document.getElementById('pixelOverlay');
+        const mainWindow = document.getElementById('mainWindow');
+        let animationId, particles = [];
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.size = Math.random() * 3 + 2;
+                this.speedX = (Math.random() - 0.5) * 8;
+                this.speedY = (Math.random() - 0.5) * 8;
+                this.gravity = 0.3;
+                this.friction = 0.98;
+            }
+            update() {
+                this.speedY += this.gravity;
+                this.speedX *= this.friction;
+                this.speedY *= this.friction;
+                this.x += this.speedX;
+                this.y += this.speedY;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.size, this.size);
+            }
+        }
+
+        function startExplosion() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const rect = mainWindow.getBoundingClientRect();
+            const style = window.getComputedStyle(mainWindow);
+            particles = [];
+            for (let x = 0; x < rect.width; x += 8) {
+                for (let y = 0; y < rect.height; y += 8) {
+                    const color = Math.random() > 0.7 ? style.borderColor : 
+                                  Math.random() > 0.5 ? style.color : style.backgroundColor;
+                    particles.push(new Particle(rect.left + x, rect.top + y, color));
+                }
+            }
+            mainWindow.style.opacity = '0';
+            pixelOverlay.classList.add('active');
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                if (particles.some(p => p.y < canvas.height && p.x > -50 && p.x < canvas.width + 50)) {
+                    animationId = requestAnimationFrame(animate);
+                } else {
+                    pixelOverlay.classList.remove('active');
+                    mainWindow.style.opacity = '1';
+                }
+            }
+            animate();
+        }
+
+        document.getElementById('closeBox').addEventListener('click', startExplosion);
+    </script>
+</body>
 </html>
